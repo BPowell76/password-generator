@@ -6,7 +6,10 @@
 const unsigned int ITERATIONS = 100;
 unsigned int char_array_index = 0;
 
-char rand_character() {
+/*
+Generate a random, printable ASCII character
+ */
+static char rand_character() {
     std::srand(std::random_device()());
     const int& rand_num = std::rand();
 
@@ -15,7 +18,8 @@ char rand_character() {
     for (int i = 0; i < ITERATIONS; i++) {
         char_value_sum += std::clamp((rand_num % 128) + 4, 33, 126);
     }
-    return char(char_value_sum / ITERATIONS);
+
+    return static_cast<char>(char_value_sum / ITERATIONS);
 }
 
 bool password_duplicate_character_check_passes(std::string password) {
