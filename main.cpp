@@ -3,9 +3,10 @@
 #include <random>
 #include <vector>
 
+const unsigned int ITERATIONS = 100;
 unsigned int char_array_index = 0;
 
-char rand_character(const unsigned int ITERATIONS) {
+char rand_character() {
     std::srand(std::random_device()());
     const int& rand_num = std::rand();
 
@@ -63,7 +64,7 @@ int main() {
     // Generate random password
     std::string password;
     for (int i = 0; i < 32; i++) {
-        password += rand_character(100);
+        password += rand_character();
     }
 
     std::cout << "Password Length: " << password.length() << std::endl;
