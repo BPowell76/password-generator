@@ -3,7 +3,7 @@
 #include <random>
 #include <vector>
 
-const unsigned int ITERATIONS = 100;
+constexpr unsigned int ITERATIONS = 100;
 
 /*
 Generate a random, printable ASCII character
