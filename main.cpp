@@ -4,7 +4,6 @@
 #include <vector>
 
 const unsigned int ITERATIONS = 100;
-unsigned int char_array_index = 0;
 
 /*
 Generate a random, printable ASCII character
@@ -24,7 +23,7 @@ static char rand_character() {
 
 bool password_duplicate_character_check_passes(std::string password) {
     std::vector<char> password_char;
-    char_array_index = 0;
+    unsigned int char_array_index = 0;
     for (unsigned int i = 0; i < password.length(); i++) {
         if (i == 0) {
             password_char.push_back(password[i]);
