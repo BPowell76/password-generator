@@ -17,7 +17,7 @@ char rand_character(const unsigned int ITERATIONS) {
     return char(char_value_sum / ITERATIONS);
 }
 
-bool check_password_uniqueness(std::string password) {
+bool password_duplicate_character_check_passes(std::string password) {
     std::vector<char> password_char;
     char_array_index = 0;
     for (unsigned int i = 0; i < password.length(); i++) {
@@ -50,13 +50,13 @@ bool check_password_uniqueness(std::string password) {
         }
     }
 
-    bool needs_reprocessing = true;
+    bool password_passes = false;
 
     if (reprocess_characters.empty()) {
-        needs_reprocessing = false;
+        password_passes = true;
     }
 
-    return needs_reprocessing;
+    return password_passes;
 }
 
 int main() {
@@ -67,13 +67,10 @@ int main() {
     }
 
     std::cout << "Password Length: " << password.length() << std::endl;
-    std::cout << "Generated Password: " << password << std::endl;
 
-    // Get unique character count
-    bool needs_reprocessing = check_password_uniqueness(password);
-
-    std::cout << "Unique Characters: " << char_array_index << std::endl;
-    std::cout << "Password Needs Reprocessing: " << needs_reprocessing << std::endl;
+    if (!password_duplicate_character_check_passes(password)) {
+        std::cout << "Reprocessing duplicate characters" << std::endl;
+    }
 
     return 0;
 }
