@@ -3,12 +3,17 @@
 #include <random>
 #include <vector>
 
+//! Number of iterations to generate a password character
 constexpr unsigned int ITERATIONS = 100;
+
+//! Password length to generate
 constexpr unsigned int PASSWORD_LENGTH = 32;
 
-/*
-Generate a random, printable ASCII character
- */
+//! Number of times a character can appear in the password string
+constexpr unsigned int CHARACTER_REPEAT_LIMIT = 3;
+
+/// Generate a random, printable ASCII character
+/// @return printable ASCII character
 static char rand_character() {
     std::srand(std::random_device()());
     const int& rand_num = std::rand();
@@ -22,6 +27,9 @@ static char rand_character() {
     return static_cast<char>(char_value_sum / ITERATIONS);
 }
 
+/// Process password string to look for characters that repeat too many times leading to a weaker password
+/// @param password The password string to check for duplicate characters
+/// @return vector with characters that exceeded the value of CHARACTER_REPEAT_LIMIT
 std::vector<char> get_characters_for_reprocessing(std::string password) {
     std::vector<char> password_char;
     unsigned int char_array_index = 0;
@@ -47,10 +55,10 @@ std::vector<char> get_characters_for_reprocessing(std::string password) {
         }
     }
 
+    // Get counts of unique characters and add to reprocess queue if count exceeds CHARACTER_REPEAT_LIMIT
     std::vector<char> reprocess_characters;
-    // Get counts of unique characters and add to reprocess queue if count exceeds 3
     for (unsigned int i = 0; i < char_array_index; i++) {
-        if (std::ranges::count(password, password_char[i]) > 3) {
+        if (std::ranges::count(password, password_char[i]) > CHARACTER_REPEAT_LIMIT) {
             reprocess_characters.push_back(password_char[i]);
         }
     }
@@ -59,15 +67,14 @@ std::vector<char> get_characters_for_reprocessing(std::string password) {
 }
 
 int main() {
-    // Generate random password
     std::string password;
     for (int i = 0; i < PASSWORD_LENGTH; i++) {
         password += rand_character();
     }
 
     std::vector<char> reprocess_characters = get_characters_for_reprocessing(password);
-    unsigned int reprocess_iterations = 0;
 
+    unsigned int reprocess_iterations = 0;
     while (reprocess_characters.empty() == false) {
         for (unsigned int i = 0; i < reprocess_characters.size(); i++) {
             for (unsigned int j = 0; j < PASSWORD_LENGTH; j++) {
