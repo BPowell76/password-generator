@@ -4,6 +4,7 @@
 #include <vector>
 
 constexpr unsigned int ITERATIONS = 100;
+constexpr unsigned int PASSWORD_LENGTH = 32;
 
 /*
 Generate a random, printable ASCII character
@@ -21,7 +22,7 @@ static char rand_character() {
     return static_cast<char>(char_value_sum / ITERATIONS);
 }
 
-bool password_duplicate_character_check_passes(std::string password) {
+std::vector<char> get_characters_for_reprocessing(std::string password) {
     std::vector<char> password_char;
     unsigned int char_array_index = 0;
     for (unsigned int i = 0; i < password.length(); i++) {
@@ -54,27 +55,35 @@ bool password_duplicate_character_check_passes(std::string password) {
         }
     }
 
-    bool password_passes = false;
-
-    if (reprocess_characters.empty()) {
-        password_passes = true;
-    }
-
-    return password_passes;
+    return reprocess_characters;
 }
 
 int main() {
     // Generate random password
     std::string password;
-    for (int i = 0; i < 32; i++) {
+    for (int i = 0; i < PASSWORD_LENGTH; i++) {
         password += rand_character();
     }
 
-    std::cout << "Password Length: " << password.length() << std::endl;
+    std::vector<char> reprocess_characters = get_characters_for_reprocessing(password);
+    unsigned int reprocess_iterations = 0;
 
-    if (!password_duplicate_character_check_passes(password)) {
-        std::cout << "Reprocessing duplicate characters" << std::endl;
+    while (reprocess_characters.empty() == false) {
+        for (unsigned int i = 0; i < reprocess_characters.size(); i++) {
+            for (unsigned int j = 0; j < PASSWORD_LENGTH; j++) {
+                if (password[j] == reprocess_characters[i]) {
+                    password[j] = rand_character();
+                }
+            }
+        }
+
+        reprocess_characters = get_characters_for_reprocessing(password);
+        reprocess_iterations++;
     }
+
+    std::cout << "Password Length: " << password.length() << std::endl;
+    std::cout << "Reprocess Iterations: " << reprocess_iterations << std::endl;
+    std::cout << "Password: " << password << std::endl;
 
     return 0;
 }
