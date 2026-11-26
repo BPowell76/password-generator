@@ -1,12 +1,19 @@
 #include <algorithm>
-#include <iostream>
 #include <random>
 #include <vector>
 #include <QApplication>
+#include <QLabel>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QSlider>
+#include <QVBoxLayout>
 #include <QWidget>
 
-//! Password length to generate
-constexpr unsigned int PASSWORD_LENGTH = 32;
+//! Minimum password length to generate
+constexpr unsigned int MIN_PASSWORD_LENGTH = 8;
+
+//! Maximum password length to generate
+constexpr unsigned int MAX_PASSWORD_LENGTH = 32;
 
 //! Number of times a character can appear in the password string
 constexpr unsigned int CHARACTER_REPEAT_LIMIT = 3;
@@ -58,17 +65,9 @@ std::vector<char> get_characters_for_reprocessing(std::string password) {
     return reprocess_characters;
 }
 
-int main(int argc, char* argv[]) {
-    QApplication app(argc, argv);
-
-    QWidget win;
-    win.setWindowTitle("Password Generator");
-    win.resize(800, 500);
-    win.show();
-
-    return app.exec();
+std::string generate_password(unsigned int length) {
     std::string password;
-    for (int i = 0; i < PASSWORD_LENGTH; i++) {
+    for (int i = 0; i < length; i++) {
         password += rand_character();
     }
 
@@ -77,7 +76,7 @@ int main(int argc, char* argv[]) {
     unsigned int reprocess_iterations = 0;
     while (reprocess_characters.empty() == false) {
         for (unsigned int i = 0; i < reprocess_characters.size(); i++) {
-            for (unsigned int j = 0; j < PASSWORD_LENGTH; j++) {
+            for (unsigned int j = 0; j < length; j++) {
                 if (password[j] == reprocess_characters[i]) {
                     password[j] = rand_character();
                 }
@@ -88,9 +87,50 @@ int main(int argc, char* argv[]) {
         reprocess_iterations++;
     }
 
-    std::cout << "Password Length: " << password.length() << std::endl;
-    std::cout << "Reprocess Iterations: " << reprocess_iterations << std::endl;
-    std::cout << "Password: " << password << std::endl;
+    return password;
+}
 
-    return 0;
+int main(int argc, char* argv[]) {
+    QApplication app(argc, argv);
+
+    QWidget win;
+    win.setWindowTitle("Password Generator");
+
+    auto* sliderLabel = new QLabel();
+    sliderLabel->setText(QString::fromStdString("Length: 32"));
+
+    auto* lengthSlider = new QSlider(Qt::Horizontal);
+    lengthSlider->setRange(MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH);
+    lengthSlider->setValue(32);
+
+    QObject::connect(lengthSlider, &QSlider::valueChanged, [sliderLabel](int value) {
+        sliderLabel->setText(QString("Length: %1").arg(value));
+    });
+
+    auto* label = new QLabel();
+    label->setText(QString("Generated Password"));
+
+    auto* textOutput = new QLineEdit();
+    textOutput->setReadOnly(true);
+    textOutput->setFixedWidth(300);
+
+    auto* genPasswordButton = new QPushButton();
+    genPasswordButton->setText(QString("Generate Password"));
+
+    QObject::connect(genPasswordButton, &QPushButton::clicked, [lengthSlider, textOutput] {
+        textOutput->setText(QString::fromStdString(generate_password(lengthSlider->value())));
+    });
+
+    auto* layout = new QVBoxLayout(&win);
+    layout->addWidget(sliderLabel);
+    layout->addWidget(lengthSlider);
+    layout->addSpacing(20);
+    layout->addWidget(label);
+    layout->addWidget(textOutput);
+    layout->addSpacing(20);
+    layout->addWidget(genPasswordButton);
+
+    win.show();
+
+    return app.exec();
 }
