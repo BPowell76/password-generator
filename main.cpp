@@ -5,9 +5,6 @@
 #include <QApplication>
 #include <QWidget>
 
-//! Number of iterations to generate a password character
-constexpr unsigned int ITERATIONS = 100;
-
 //! Password length to generate
 constexpr unsigned int PASSWORD_LENGTH = 32;
 
@@ -17,16 +14,9 @@ constexpr unsigned int CHARACTER_REPEAT_LIMIT = 3;
 /// Generate a random, printable ASCII character
 /// @return printable ASCII character
 static char rand_character() {
-    std::srand(std::random_device()());
-    const int& rand_num = std::rand();
-
-    // Determine the character to return by totaling up the clamped character values and dividing by the number of iterations
-    unsigned int char_value_sum = 0;
-    for (int i = 0; i < ITERATIONS; i++) {
-        char_value_sum += std::clamp((rand_num % 128) + 4, 33, 126);
-    }
-
-    return static_cast<char>(char_value_sum / ITERATIONS);
+    std::random_device rd;
+    std::uniform_int_distribution<int> distribution(33, 126);
+    return static_cast<char>(distribution(rd));
 }
 
 /// Process password string to look for characters that repeat too many times leading to a weaker password
