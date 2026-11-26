@@ -2,6 +2,8 @@
 #include <iostream>
 #include <random>
 #include <vector>
+#include <QApplication>
+#include <QWidget>
 
 //! Number of iterations to generate a password character
 constexpr unsigned int ITERATIONS = 100;
@@ -66,7 +68,15 @@ std::vector<char> get_characters_for_reprocessing(std::string password) {
     return reprocess_characters;
 }
 
-int main() {
+int main(int argc, char* argv[]) {
+    QApplication app(argc, argv);
+
+    QWidget win;
+    win.setWindowTitle("Password Generator");
+    win.resize(800, 500);
+    win.show();
+
+    return app.exec();
     std::string password;
     for (int i = 0; i < PASSWORD_LENGTH; i++) {
         password += rand_character();
